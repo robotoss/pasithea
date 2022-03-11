@@ -1,0 +1,9 @@
+[package]
+name = "pasithea"
+version = "0.0.1"
+authors = ["FreeOn <zoxo@outlook.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
