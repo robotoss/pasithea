@@ -12,5 +12,8 @@ pub struct Cli {
     #[clap(short, long, default_value = "audio/2830-3980-0043.wav")]
     pub audio_file_path: String,
 
+}
 
+pub fn get_args() -> Cli {
+    Cli::parse()
 }

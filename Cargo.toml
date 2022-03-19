@@ -11,4 +11,7 @@ coqui-stt = "0.2.2"
 audrey = "0.3.0"
 dasp_signal = "0.11"
 dasp_interpolate = { version = "0.11", features = ["linear"] }
+cpal = "0.13.5"
+anyhow = "1.0.56"
+nnnoiseless = "0.4.0"
 clap = { version = "3.1.6", features = ["derive"] }
