@@ -7,8 +7,12 @@ use super::audio_settings::StreamConfig;
 
 
 
-pub fn record_audio() -> Result<Vec<i16>> {
-    let config = StreamConfig::init_autdio_settings(200)?;
+pub fn record_audio(
+    silence_level: i32, 
+    pause_length: f32, 
+    show_amplitude: bool,
+) -> Result<Vec<i16>> {
+    let config = StreamConfig::init_autdio_settings(silence_level)?;
     
     let device = config.device();
     let (sound_sender, sound_receiver) = channel();
@@ -29,8 +33,8 @@ pub fn record_audio() -> Result<Vec<i16>> {
             let denoised_stream = start(
                 &sound_receiver,
                 config.silence_level(),
-                true,
-                100.0,
+                show_amplitude,
+                pause_length,
             )?;
             let audio_buf = denoised_stream
                 .into_iter()

@@ -12,6 +12,18 @@ pub struct Cli {
     #[clap(short, long, default_value = "audio/2830-3980-0043.wav")]
     pub audio_file_path: String,
 
+     /// The length of the pause between the text to start recognizing the text in seconds
+     #[clap(short, long, default_value = "3.1")]
+     pub pause_length: f32,
+
+     /// The length of the pause between the text to start recognizing the text in seconds
+     #[clap(short, long, default_value = "100")]
+     pub silence_level: i32,
+
+    /// Show debug prints
+    #[clap(short, long, parse(try_from_str), default_value = "true")]
+    pub debug_mode: bool,
+
 }
 
 pub fn get_args() -> Cli {
