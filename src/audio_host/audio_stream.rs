@@ -49,7 +49,7 @@ pub fn record_audio(
             let src_sample_rate = stream_config.sample_rate.0;
             let dest_sample_rate = 16000 as u32;
 
-            if (src_sample_rate != dest_sample_rate) {
+            if src_sample_rate != dest_sample_rate {
                 let interpolator = Linear::new([0i16], [0]);
                 // We need to interpolate to the target sample rate
 
@@ -59,7 +59,7 @@ pub fn record_audio(
                     src_sample_rate as f64,
                     dest_sample_rate as f64,
                 );
-
+                
                 Ok(conv.until_exhausted().map(|v| v[0]).collect())
             } else {
                 Ok(audio_buf.collect::<Vec<_>>())
