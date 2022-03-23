@@ -8,16 +8,12 @@ pub struct Cli {
     #[clap(short, long, default_value = "models")]
     pub model_dir: String,
 
-    /// Path to the audio file
-    #[clap(short, long, default_value = "audio/2830-3980-0043.wav")]
-    pub audio_file_path: String,
-
      /// The length of the pause between the text to start recognizing the text in seconds
-     #[clap(short, long, default_value = "3.1")]
+     #[clap(short, long, default_value = "1.0")]
      pub pause_length: f32,
 
      /// The length of the pause between the text to start recognizing the text in seconds
-     #[clap(short, long, default_value = "100")]
+     #[clap(short, long, default_value = "200")]
      pub silence_level: i32,
 
     /// Show debug prints
