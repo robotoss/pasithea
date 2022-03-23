@@ -1,19 +1,23 @@
-use std::{sync::mpsc::{channel, Receiver}, time::Instant, ops::Neg};
+use std::{
+    ops::Neg,
+    sync::mpsc::{channel, Receiver},
+    time::Instant,
+};
 
+use super::audio_settings::AppStreamConfig;
 use anyhow::Result;
 use cpal::traits::{DeviceTrait, StreamTrait};
+use dasp_interpolate::linear::Linear;
+use dasp_signal::{from_iter, interpolate::Converter, Signal};
 use nnnoiseless::DenoiseState;
-use super::audio_settings::StreamConfig;
-
-
 
 pub fn record_audio(
-    silence_level: i32, 
-    pause_length: f32, 
+    silence_level: i32,
+    pause_length: f32,
     show_amplitude: bool,
 ) -> Result<Vec<i16>> {
-    let config = StreamConfig::init_autdio_settings(silence_level)?;
-    
+    let config = AppStreamConfig::init_autdio_settings(silence_level)?;
+
     let device = config.device();
     let (sound_sender, sound_receiver) = channel();
     let stream_config = config.supported_config().config();
@@ -38,9 +42,28 @@ pub fn record_audio(
             )?;
             let audio_buf = denoised_stream
                 .into_iter()
-                .map(|a| (a * i16::MAX as f32) as i16)
-                .collect::<Vec<_>>();
-            Ok(audio_buf)
+                .map(|a| (a * i16::MAX as f32) as i16);
+
+            // input audio must be mono and usually at 16KHz, but this depends on 16000
+
+            let src_sample_rate = stream_config.sample_rate.0;
+            let dest_sample_rate = 16000 as u32;
+
+            if (src_sample_rate != dest_sample_rate) {
+                let interpolator = Linear::new([0i16], [0]);
+                // We need to interpolate to the target sample rate
+
+                let conv = Converter::from_hz_to_hz(
+                    from_iter(audio_buf.map(|s| [s])),
+                    interpolator,
+                    src_sample_rate as f64,
+                    dest_sample_rate as f64,
+                );
+
+                Ok(conv.until_exhausted().map(|v| v[0]).collect())
+            } else {
+                Ok(audio_buf.collect::<Vec<_>>())
+            }
         }
         Err(err) => {
             println!("Failed to start the stream: {}", err);
@@ -57,6 +80,7 @@ fn start(
 ) -> Result<Vec<f32>> {
     let mut silence_start = None;
     let mut sound_from_start_till_pause = vec![];
+
     loop {
         let small_sound_chunk = sound_receiver.recv()?;
         sound_from_start_till_pause.extend(&small_sound_chunk);

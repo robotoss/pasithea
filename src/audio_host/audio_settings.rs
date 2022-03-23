@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
-use cpal::{Device, SupportedStreamConfig, SampleRate};
-use cpal::traits::{HostTrait};
-use cpal::traits::{DeviceTrait};
+use cpal::traits::DeviceTrait;
+use cpal::traits::HostTrait;
+use cpal::{Device, SampleRate, SupportedStreamConfig};
 
 const SAMPLE_RATE: u32 = 16000;
 
@@ -9,17 +9,17 @@ const SAMPLE_RATE: u32 = 16000;
 /// # Input device configuration
 /// Gets data ready to begin recording
 
-pub(crate) struct StreamConfig {
+pub(crate) struct AppStreamConfig {
     device: Device,
     config: SupportedStreamConfig,
     silence_level: i32,
 }
 
-impl StreamConfig {
-    pub fn init_autdio_settings(silence_level: i32) -> Result<Self>{
+impl AppStreamConfig {
+    pub fn init_autdio_settings(silence_level: i32) -> Result<Self> {
         let device = get_default_device()?;
         match get_config(&device) {
-            Ok(config) => Ok(StreamConfig {
+            Ok(config) => Ok(AppStreamConfig {
                 device,
                 config,
                 silence_level,
